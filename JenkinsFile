@@ -2,11 +2,25 @@ pipeline {
     agent any
 
     environment {
-        // Maven installation name in Jenkins
-        MAVEN_HOME = tool name: 'Maven 3', type: 'Maven'
+        MAVEN_HOME = tool name: 'Maven', type: 'Maven'
     }
 
     stages {
+        stage('Check Git Installation') {
+            steps {
+                script {
+                    // Check if Git is installed
+                    def gitInstalled = sh(script: 'git --version', returnStatus: true)
+                    if (gitInstalled != 0) {
+                        echo 'Git is not installed, attempting to install...'
+                        sh 'brew install git' // If you're on macOS, you can use Homebrew, modify if you're on Linux
+                    } else {
+                        echo 'Git is already installed.'
+                    }
+                }
+            }
+        }
+
         stage('Checkout') {
             steps {
                 // Checkout the code from the Git repository
@@ -14,10 +28,18 @@ pipeline {
             }
         }
 
-        stage('Set Up Maven') {
+        stage('Check Maven Installation') {
             steps {
-                // Ensure Maven is set up and ready
-                sh "${MAVEN_HOME}/bin/mvn --version"
+                script {
+                    // Check if Maven is installed
+                    def mavenInstalled = sh(script: '${MAVEN_HOME}/bin/mvn --version', returnStatus: true)
+                    if (mavenInstalled != 0) {
+                        echo 'Maven is not installed, attempting to install...'
+                        sh 'brew install maven'  // If you're on macOS, use Homebrew, modify for Linux if necessary
+                    } else {
+                        echo 'Maven is already installed.'
+                    }
+                }
             }
         }
 
