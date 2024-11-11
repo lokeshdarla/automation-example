@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+
+    environment {
+        // Maven installation name in Jenkins
+        MAVEN_HOME = tool name: 'Maven 3', type: 'Maven'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                // Checkout the code from the Git repository
+                git 'https://github.com/your-repository/maven-java-app.git'
+            }
+        }
+
+        stage('Set Up Maven') {
+            steps {
+                // Ensure Maven is set up and ready
+                sh "${MAVEN_HOME}/bin/mvn --version"
+            }
+        }
+
+        stage('Build and Test') {
+            steps {
+                // Run Maven build and tests (includes compilation, testing, etc.)
+                sh "${MAVEN_HOME}/bin/mvn clean test"
+            }
+        }
+
+        stage('Archive Test Results') {
+            steps {
+                // Archive test results in JUnit format
+                junit '**/target/surefire-reports/*.xml'
+            }
+        }
+
+        stage('Clean Up') {
+            steps {
+                // Clean up the build artifacts (optional)
+                sh "${MAVEN_HOME}/bin/mvn clean"
+            }
+        }
+    }
+
+    post {
+        always {
+            // This will be run after the pipeline completes (whether success or failure)
+            echo 'Pipeline execution completed.'
+        }
+
+        success {
+            echo 'Tests ran successfully!'
+        }
+
+        failure {
+            echo 'Test case execution failed!'
+        }
+    }
+}
