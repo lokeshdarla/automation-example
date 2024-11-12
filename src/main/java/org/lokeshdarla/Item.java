@@ -21,6 +21,10 @@ public class Item {
     return shippingWeight;
   }
 
+  public String getDescription() {
+    return this.description;
+  }
+
   public boolean inStock() {
     return true;
   }

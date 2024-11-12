@@ -6,4 +6,8 @@ public abstract class Payment {
   public Payment(float amount) {
     this.amount = amount;
   }
+
+  public float getAmount() {
+    return this.amount;
+  }
 }
